@@ -3,8 +3,10 @@ import { IFriend } from "../interfaces/IFriend";
 import { ApiError } from "../errors/errors";
 import { Request } from "express";
 import fetch from "node-fetch";
+import PositionFacade from "../facades/positionFacade";
 
 let friendFacade: FriendFacade;
+let positionFacade: PositionFacade;
 
 /*
 We don't have access to app or the Router so we need to set up the facade in another way
@@ -16,6 +18,23 @@ export function setupFacade(db: any) {
   if (!friendFacade) {
     friendFacade = new FriendFacade(db);
   }
+
+  if (!positionFacade) {
+    positionFacade = new PositionFacade(db);
+  }
+}
+
+interface IPositionInput {
+  email: string;
+  longitude: number;
+  latitude: number;
+}
+
+interface IFindNearbyPlayers {
+  email: string;
+  latitude: number;
+  longitude: number;
+  distance: number;
 }
 
 // resolver map
@@ -50,6 +69,10 @@ export const resolvers = {
     findFriend: async (_: object, { input }: { input: string }) => {
       return friendFacade.findFriend(input);
     },
+
+    getAllPositions: async (root: any, _: any, req: any) => {
+      return positionFacade.getAllPositions();
+    },
   },
   Mutation: {
     createFriend: async (_: object, { input }: { input: IFriend }) => {
@@ -62,6 +85,35 @@ export const resolvers = {
 
     deleteFriend: async (_: object, { input }: { input: string }) => {
       return friendFacade.deleteFriend(input);
+    },
+
+    addOrUpdatePosition: async (
+      _: object,
+      { input }: { input: IPositionInput }
+    ) => {
+      try {
+        positionFacade.addOrUpdatePosition(
+          input.email,
+          input.longitude,
+          input.latitude
+        );
+
+        return true;
+      } catch (error) {
+        return false;
+      }
+    },
+
+    findNearbyPlayers: async (
+      _: object,
+      { input }: { input: IFindNearbyPlayers }
+    ) => {
+      return positionFacade.findNearbyFriends(
+        input.email,
+        input.longitude,
+        input.latitude,
+        input.distance
+      );
     },
   },
 };

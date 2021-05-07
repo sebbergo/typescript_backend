@@ -22,17 +22,57 @@ class PositionFacade {
     longitude: number,
     latitude: number
   ): Promise<IPosition> {
-    throw new Error("Not Implemented");
+    //find friend i Friend collection med find metode
+    const foundFriend = await this.friendFacade.findFriend(email);
+    //lav name til position ud fra kombineret firstname og lastname fra friendcollection
+    const pos = {
+      lastUpdated: new Date(),
+      email: email,
+      name: foundFriend.firstName + " " + foundFriend.lastName,
+      location: { type: "Point", coordinates: [longitude, latitude] },
+    };
+
+    const query = { email };
+    const update = {
+      $set: {
+        lastUpdate: pos.lastUpdated,
+        email: pos.email,
+        name: pos.name,
+        location: pos.location,
+      },
+    };
+
+    const options = { upsert: true, returnOriginal: false };
+    const result = await this.positionCollection.findOneAndUpdate(
+      query,
+      update,
+      options
+    );
+    return result.value;
   }
 
   async findNearbyFriends(
     email: string,
-    password: string,
     longitude: number,
     latitude: number,
     distance: number
   ): Promise<Array<IPosition>> {
-    throw new Error("Not Implemented");
+    const friendExist = await this.friendFacade.findFriend(email);
+    await this.addOrUpdatePosition(email, longitude, latitude);
+    return this.positionCollection
+      .find({
+        location: {
+          $near: {
+            $geometry: {
+              type: "Point",
+              coordinates: [longitude, latitude],
+            },
+            $maxDistance: distance,
+            $minDistance: 2,
+          },
+        },
+      })
+      .toArray();
   }
 
   async getAllPositions(): Promise<Array<IPosition>> {

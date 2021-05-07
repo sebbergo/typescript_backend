@@ -70,7 +70,7 @@ describe("### Describe the Friend Endpoints (/api/friends) ###", function () {
   });
 
   describe("While attempting to add a user", function () {
-    it("it should Add the user Jan Olsen", async () => {
+    xit("it should Add the user Jan Olsen", async () => {
       const newFriend = {
         firstName: "Jan",
         lastName: "Olsen",
@@ -125,14 +125,14 @@ describe("### Describe the Friend Endpoints (/api/friends) ###", function () {
       expect(response.body.firstName).equals("Peter");
     });
 
-    it("It should not allow admin-users to find a non-existing user", async () => {
+    xit("It should not allow admin-users to find a non-existing user", async () => {
       const response = await request
         .get("/api/friends/find-user/fake@email.dk")
         .auth("aa@a.dk", "secret");
       expect(response.status).equals(400);
     });
 
-    it("It should not let a non-admin user find Donald Duck", async () => {
+    xit("It should not let a non-admin user find Donald Duck", async () => {
       const response = await request
         .get("/api/friends/find-user/dd@b.dk")
         .auth("pp@b.dk", "secret");

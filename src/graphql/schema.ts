@@ -1,7 +1,7 @@
 import { makeExecutableSchema } from "graphql-tools";
 import { resolvers } from "./resolvers";
 
-const typeDefs = `
+const typeDefs = `#graphql
     enum Gender {
         MALE
         FEMALE
@@ -16,6 +16,17 @@ const typeDefs = `
         gender: Gender
         age: Int
         role: String
+    }
+
+    type Point{
+        type: String
+        coordinates: [Float]
+    }
+
+    type FriendPosition{
+        email: String
+        name: String
+        location: Point
     }
 
     """
@@ -39,6 +50,11 @@ const typeDefs = `
         Finds a user with the given email
         """
         findFriend(input: String): Friend
+
+        """
+       Get all positions in the positions database
+       """
+       getAllPositions: FriendPosition
     }
     
     input FriendInput {
@@ -59,6 +75,19 @@ const typeDefs = `
         age: Int!
     }
 
+    input PositionInput{
+        email: String!
+        longitude: Float!
+        latitude: Float!
+    }
+
+    input FindNearbyPlayersInput{
+        email: String!
+        longitude: Float!
+        latitude: Float!
+        distance: Float!
+    }
+
     type Mutation {
        """
        Allows anyone (non authenticated users) to create a new friend
@@ -74,6 +103,16 @@ const typeDefs = `
        Allows anyone authenticated to delete
        """
        deleteFriend(input: String): Boolean
+
+       """
+       Update or create a persons position
+       """
+       addOrUpdatePosition(input: PositionInput): Boolean
+
+       """"
+       Find nearby friends in the area
+       """
+       findNearbyPlayers(input: FindNearbyPlayersInput): [FriendPosition]
     }
 `;
 

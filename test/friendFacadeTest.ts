@@ -49,7 +49,7 @@ describe("## Verify the Friends Facade ##", () => {
   });
 
   describe("Verify the addFriend method", () => {
-    it("It should Add the user Jan", async () => {
+    xit("It should Add the user Jan", async () => {
       const newFriend = {
         firstName: "Jan",
         lastName: "Olsen",
@@ -77,7 +77,7 @@ describe("## Verify the Friends Facade ##", () => {
   });
 
   describe("Verify the editFriend method", () => {
-    it("It should change lastName to XXXX", async () => {
+    xit("It should change lastName to XXXX", async () => {
       const newLastName = {
         firstName: "Sebastian",
         lastName: "nytefternavn",
